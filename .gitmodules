@@ -1,0 +1,9 @@
+[submodule "edk2-non-osi"]
+	path = edk2-non-osi
+	url = git@github.com:sophgo/edk2-non-osi.git
+[submodule "edk2"]
+	path = edk2
+	url = git@github.com:sophgo/edk2.git
+[submodule "edk2-platforms"]
+	path = edk2-platforms
+	url = git@github.com:sophgo/edk2-platforms.git
