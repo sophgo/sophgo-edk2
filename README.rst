@@ -62,9 +62,9 @@ Build
 
     .. code:: sh
 
-        build -a RISCV64 -t GCC5 -p Platform/Sophgo/SG2042Pkg/SG2042_EVB_v1_0_Board/SG2042.dsc
+        build -a RISCV64 -t GCC5 -p Platform/Sophgo/SG2042Pkg/SG2042_EVB_Board/SG2042.dsc
 
-8. Final output is $WORKSPACE/Build/SG2042_EVB_v1_0/DEBUG_GCC5/FV/SG2042.fd
+8. Final output is $WORKSPACE/Build/SG2042_EVB/DEBUG_GCC5/FV/SG2042.fd
 
 Deploy
 ======
@@ -77,13 +77,13 @@ Deploy
 
         sudo mount /dev/sdc1 /mnt
 
-2. Copy $WORKSPACE/Build/SG2042_EVB_v1_0/DEBUG_GCC5/FV/SG2042.fd to your SD card and replace fw_jump.bin
+2. Copy $WORKSPACE/Build/SG2042_EVB/DEBUG_GCC5/FV/SG2042.fd to your SD card and replace riscv64_Image
 
 .. highlights::
 
     .. code:: sh
 
-        sudo cp $WORKSPACE/Build/SG2042_EVB_v1_0/DEBUG_GCC5/FV/SG2042.fd /mnt/riscv64/fw_jump.bin
+        sudo cp $WORKSPACE/Build/SG2042_EVB/DEBUG_GCC5/FV/SG2042.fd /mnt/riscv64/riscv64_Image
 
 Run
 ===
