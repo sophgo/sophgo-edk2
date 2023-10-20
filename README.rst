@@ -62,7 +62,7 @@ Build
 
     .. code:: sh
 
-        build -a RISCV64 -t GCC5 -p Platform/Sophgo/SG2042Pkg/SG2042_EVB_Board/SG2042.dsc
+        build -a RISCV64 -t GCC5 -p Platform/Sophgo/SG2042_EVB_Board/SG2042.dsc
 
 
 .. note::
