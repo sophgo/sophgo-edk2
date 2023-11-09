@@ -58,19 +58,31 @@ Build
 
 7. Build binaries for SG2042.
 
+   Final output is ``$WORKSPACE/Build/SG2042_EVB/DEBUG_GCC5/FV/SG2042.fd``.
+
 .. highlights::
 
     .. code:: sh
 
         build -a RISCV64 -t GCC5 -p Platform/Sophgo/SG2042_EVB_Board/SG2042.dsc
 
+8. Enable ``MultiArchUefiPkg`` for graphics cards supporting UEFI.
+
+   Final output is ``$WORKSPACE/Build/SG2042_EVB/RELEASE_GCC5/FV/SG2042.fd``.
+
+.. highlights::
+
+    .. code:: sh
+
+        build -a RISCV64 -t GCC5 -b RELEASE -D X64EMU_ENABLE -p Platform/Sophgo/SG2042_EVB_Board/SG2042.dsc
+
 
 .. note::
 
  - ``-D X64EMU_ENABLE`` is an option to enable MultiArchUefiPkg, an emulator for x64 OpRoms, or not.
+   Please see the link https://github.com/intel/MultiArchUefiPkg for more details.
+ - If you use ``-b DEBUG`` to replace ``-b RELEASE`` to build, MultiArchUefiPkg maybe not work.
 
-
-8. Final output is ``$WORKSPACE/Build/SG2042_EVB/DEBUG_GCC5/FV/SG2042.fd``.
 
 Deploy
 ======
@@ -83,16 +95,15 @@ Deploy
 
         sudo mount /dev/sdc1 /mnt
 
-2. Copy ``$WORKSPACE/Build/SG2042_EVB/DEBUG_GCC5/FV/SG2042.fd`` to your SD card.
+2. Copy ``SG2042.fd`` to your SD card in the ``0:riscv64/`` directory.
 
 - Option 1: Replace ``riscv64_Image`` directly.
-
 
 .. highlights::
 
     .. code:: sh
 
-        sudo cp $WORKSPACE/Build/SG2042_EVB/DEBUG_GCC5/FV/SG2042.fd /mnt/riscv64/riscv64_Image
+        sudo cp SG2042.fd /mnt/riscv64/riscv64_Image
 
 
 - Option 2: Write ``conf.ini`` in the ``0:riscv64/`` directory.
@@ -107,11 +118,19 @@ Deploy
 
         [devicetree]
         name = mango-sophgo-x8evb.dtb
+        ; name = mango-sophgo-x4evb.dtb
+        ; name = mango-milkv-pioneer.dtb
+        ; name = mango-sophgo-pisces.dtb
 
         [kernel]
         name = SG2042.fd
 
         [eof]
+
+3. Place ``grubriscv64.efi`` in the EFI partition of your SSD. Please see `How to build and config GRUB2 <https://github.com/sophgo/sophgo-doc/blob/main/SG2042/HowTo/How%20to%20build%20and%20config%20grub2.rst>`_.
+
+   * Ubuntu: place the ``grub.cfg`` in the EFI partition.
+   * Fedora: modify ``grub.cfg`` in the BOOT partition of your SSD.
 
 Run
 ===
@@ -120,7 +139,7 @@ Run
 
 2. Power on your board, wait untill entering the UEFI shell.
 
-3. Boot Linux kernel using GRUB2, type commands in the UEFI Shell as follows or put a ``startup.nsh`` file in your SD card.
+3. Boot Linux kernel using GRUB2. Type commands in the UEFI Shell as follows or put a ``startup.nsh`` file in the EFI partition of your SSD.
 
 .. highlights::
 
@@ -128,3 +147,12 @@ Run
 
         fs0:
         grubriscv64.efi
+
+Notes
+=====
+
+1. The token ``PcdMangoPcieEnableMask`` in ``edk2-platforms/Platform/Sophgo/SG2042_EVB_Board/SG2042.dsc``: different values for different PCIe topology. ``0x7`` is the default value currently.
+
+   - SG2042 X8/X4 EVB: ``0x7``
+   - Milk-V PioneerBox: ``0xF``
+   - SOPHON Pisces Server: ``0x4``
