@@ -148,11 +148,3 @@ Run
         fs0:
         grubriscv64.efi
 
-Notes
-=====
-
-1. The token ``PcdMangoPcieEnableMask`` in ``edk2-platforms/Platform/Sophgo/SG2042_EVB_Board/SG2042.dsc``: different values for different PCIe topology. ``0x7`` is the default value currently.
-
-   - SG2042 X8/X4 EVB: ``0x7``
-   - Milk-V PioneerBox: ``0xF``
-   - SOPHON Pisces Server: ``0x4``
