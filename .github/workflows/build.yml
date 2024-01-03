@@ -1,0 +1,60 @@
+name: sophgo-edk2-build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  build-edk2:
+    runs-on: ubuntu-22.04
+    env:
+      mainline_elf_toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2023.12.14
+      mainline_elf_toolchain_file_name: riscv64-elf-ubuntu-22.04-gcc-nightly-2023.12.14-nightly.tar.gz
+      wget_alias: 'wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0'
+    
+    steps:
+      - name: Install toolchains
+        run: |
+              ${wget_alias} ${mainline_elf_toolchain}/${mainline_elf_toolchain_file_name}
+              tar -xvf ${mainline_elf_toolchain_file_name} -C /opt
+
+      - name: Install software
+        run: |
+              sudo apt update && \
+              sudo apt install -y autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev gawk \
+                                  build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev \
+                                  ninja-build uuid-dev gcc-riscv64-unknown-elf
+
+      - name: Checkout sophgo-edk2
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Compile BaseTools
+        run: |
+              export PATH="/opt/riscv/bin:$PATH"
+              export WORKSPACE=`pwd`
+              export PACKAGES_PATH=$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi
+              export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
+              source edk2/edksetup.sh
+              make -C edk2/BaseTools
+
+      - name: Compile edk2
+        run: |
+              export PATH="/opt/riscv/bin:$PATH"
+              export WORKSPACE=`pwd`
+              export PACKAGES_PATH=$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi
+              export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
+              source edk2/edksetup.sh
+              build -a RISCV64 -t GCC5 -b RELEASE -D X64EMU_ENABLE -p Platform/Sophgo/SG2042_EVB_Board/SG2042.dsc
+              cp -v $WORKSPACE/Build/SG2042_EVB/RELEASE_GCC5/FV/SG2042.fd $GITHUB_WORKSPACE/
+
+      - name: 'Upload Build Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: sophgo-edk2
+          path: SG2042.fd
+          retention-days: 30
