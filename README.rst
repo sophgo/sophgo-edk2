@@ -83,6 +83,20 @@ Build
    Please see the link https://github.com/intel/MultiArchUefiPkg for more details.
  - If you use ``-b DEBUG`` to replace ``-b RELEASE`` to build, MultiArchUefiPkg maybe not work.
 
+9. Enable ACPI for SG2042.
+
+   Final output is ``$WORKSPACE/Build/SG2042_EVB/RELEASE_GCC5/FV/SG2042.fd``.
+
+.. highlights::
+
+    .. code:: sh
+
+        build -a RISCV64 -t GCC5 -b RELEASE -D ACPI_ENABLE -p Platform/Sophgo/SG2042_EVB_Board/SG2042.dsc
+
+
+.. note::
+
+ - ``-D ACPI_ENABLE`` is an option to enable ACPI. However, ACPI support is currently only provided for SG2042 x4 EVB.
 
 Deploy
 ======
