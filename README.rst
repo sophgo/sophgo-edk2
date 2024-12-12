@@ -142,10 +142,53 @@ Deploy
 
         [eof]
 
-3. Place ``grubriscv64.efi`` in the EFI partition of your SSD. Please see `How to build and config GRUB2 <https://github.com/sophgo/sophgo-doc/blob/main/SG2042/HowTo/How%20to%20build%20and%20config%20grub2.rst>`_.
+3. Build GRUB 2. Please see `How to build and config GRUB2 <https://github.com/sophgo/sophgo-doc/blob/main/SG2042/HowTo/How%20to%20build%20and%20config%20grub2.rst>`_.
+
+- Option 1. Place ``grubriscv64.efi`` in the EFI partition of your SSD.
 
    * Ubuntu: place the ``grub.cfg`` in the EFI partition.
    * Fedora: modify ``grub.cfg`` in the BOOT partition of your SSD.
+
+- Option 2. Automatically identify GRUB 2 during startup.
+
+  * Ubuntu:
+.. highlights::
+
+    .. code:: sh
+
+        sudo cp grubriscv64/ubuntu-rootfs/grubriscv64.efi /mnt/EFI/BOOT/BOOTRISCV64.EFI
+        sudo cp grubriscv64/ubuntu-rootfs/grubriscv64.efi /mnt/EFI/ubuntu/
+        sudo cp grubriscv64/ubuntu.cfg /mnt/EFI/ubuntu/grub.cfg
+
+
+Create ``grub.cfg``. Put it to ``boot/grub/grub.cfg``.
+
+.. highlights::
+
+    .. code:: sh
+
+        kernel_version=`ls /home/ubuntu/bsp-debs/linux-image-[0-9]*.deb | cut -d '-' -f 4 | cut -d '.' -f 1-3`
+        set default=0
+        set timeout_style=menu
+        set timeout=2
+
+        set term="vt100"
+
+        menuentry 'Ubuntu on SG2042' {
+                linux /boot/vmlinuz-$kernel_version  console=ttyS0,115200 root=LABEL=cloudimg-rootfs rootfstype=ext4 rootwait rw earlycon selinux=0 LANG=en_US.UTF-8
+                initrd /boot/initrd.img-$kernel_version
+        }
+
+Put it to ``boot/grub/grub.cfg``.
+
+.. highlights::
+
+    .. code:: sh
+
+        sudo mount /dev/sdc2 /media
+        sudo mkdir /media/boot/grub
+        sudo cp grub.cfg /media/boot/grub/
+
 
 Run
 ===
