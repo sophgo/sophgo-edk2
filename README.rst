@@ -50,19 +50,19 @@ Build binaries.
 Final output is ``$WORKSPACE/Build/SG2044/DEBUG_GCC5/FV/SG2044.fd``.
 
     .. code:: sh
-    
+
         build -a RISCV64 -t GCC5 -b DEBUG -p Platform/Sophgo/SG2044Pkg/SG2044.dsc
 
 
 More building options:
-------------------------   
-   
+------------------------
+
 1. Build Debug version or Release version: use ``-b DEBUG`` or  ``-b RELEASE``.
-   
+
    Final output is in ``$WORKSPACE/Build/SG2044/DEBUG_GCC5/FV/SG2044.fd``
-   
+
     .. code:: sh
-      
+
         # build debug version
         build -a RISCV64 -t GCC5 -b DEBUG -p Platform/Sophgo/SG2044Pkg/SG2044.dsc
         # build release version
@@ -74,18 +74,46 @@ More building options:
 
         build -a RISCV64 -t GCC5 -b RELEASE -D X64EMU_ENABLE -p Platform/Sophgo/SG2044Pkg/SG2044.dsc
 
-   
+
    ``-D X64EMU_ENABLE`` is an option to enable MultiArchUefiPkg, an emulator for x64 OpRoms, or not.
    Please see the link https://github.com/intel/MultiArchUefiPkg for more details.
    If you use ``-b DEBUG`` to replace ``-b RELEASE`` to build, MultiArchUefiPkg maybe not work.
 
 3. Enable ACPI: use ``-D ACPI_ENABLE``.
 
+   Make sure the iASL (Intel ACPI Source Language Optimizing Compiler and Disassembler) is the latest version ``20241212``.
+
+   The iASL compiler/disassembler is a fully-featured translator for the ACPI Source Language (ASL) and ACPI binary data tables.
+   Please see the link https://www.intel.com/content/www/us/en/content-details/772895/iasl-acpi-source-language-optimizing-compiler-disassembler-user-guide-doc.html for more details.
+
+   The install steps as follows.
+
+   .. code:: sh
+
+        # Download source code
+        git clone https://github.com/acpica/acpica.git
+
+        cd acpica
+
+        # Compile
+        make
+
+        # Install
+        sudo make install
+
+        # Check version
+        iasl -v
+        # # Show the info
+        Intel ACPI Component Architecture
+        ASL+ Optimizing Compiler/Disassembler version 20241212
+        Copyright (c) 2000 - 2023 Intel Corporation
+
+   ``-D ACPI_ENABLE`` is an option to enable ACPI. ACPI support is currently provided for SG2044 EVB. To use the ACPI feature in the Linux Kernel on the SG2044 platform, see the link https://github.com/sophgo/linux-riscv/tree/sg2044-dev-6.12.
+
     .. code:: sh
 
         build -a RISCV64 -t GCC5 -b DEBUG -D ACPI_ENABLE -p Platform/Sophgo/SG2044Pkg/SG2044.dsc
 
-   ``-D ACPI_ENABLE`` is an option to enable ACPI. ACPI support is currently provided for SG2044 EVB. To enable the ACPI feature in the linux kernel on the SG2044 platform, see the link https://github.com/sophgo/linux-riscv/tree/sg2044-dev-6.12.
 
 Deploy
 ======
@@ -96,8 +124,8 @@ Deploy
 
         sudo mount /dev/sdc1 /mnt
 
-2. Copy ``SG2044.fd``  to your SD card in the ``0:riscv64/`` directory.
-   
+2. Copy ``SG2044.fd`` to your SD card in the ``0:riscv64/`` directory.
+
     .. code:: sh
-        
-        sudo cp SG2044.fd /mnt/riscv64/ 
+
+        sudo cp SG2044.fd /mnt/riscv64/
