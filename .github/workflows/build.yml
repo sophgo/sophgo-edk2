@@ -10,10 +10,16 @@ on:
 jobs:
   build-edk2:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        M_PLAT_NAME: [SRA3-40, SRA3-40-8, SD3-10]
+
     env:
       mainline_elf_toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2023.12.14
       mainline_elf_toolchain_file_name: riscv64-elf-ubuntu-22.04-gcc-nightly-2023.12.14-nightly.tar.gz
       wget_alias: 'wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0'
+      CHIP: sg2044
+      PLAT: ${{ matrix.M_PLAT_NAME }}
     
     steps:
       - name: Install toolchains
@@ -26,35 +32,34 @@ jobs:
               sudo apt update && \
               sudo apt install -y autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev gawk \
                                   build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev \
-                                  ninja-build uuid-dev gcc-riscv64-unknown-elf
+                                  ninja-build uuid-dev gcc-riscv64-unknown-elf acpica-tools
 
       - name: Checkout sophgo-edk2
         uses: actions/checkout@v4
         with:
+          repository: sophgo/sophgo-edk2
+          path: sophgo-edk2
+          ref: devel-sg2044
           submodules: recursive
+      
+      - name: prepare
+        run: mkdir -p artifact
 
-      - name: Compile BaseTools
+      - name: Compile edk2
+        working-directory: sophgo-edk2
         run: |
               export PATH="/opt/riscv/bin:$PATH"
               export WORKSPACE=`pwd`
-              export PACKAGES_PATH=$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi
+              export PACKAGES_PATH=$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi:$WORKSPACE/external-modules
               export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
               source edk2/edksetup.sh
               make -C edk2/BaseTools
-
-      - name: Compile edk2
-        run: |
-              export PATH="/opt/riscv/bin:$PATH"
-              export WORKSPACE=`pwd`
-              export PACKAGES_PATH=$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi
-              export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
-              source edk2/edksetup.sh
-              build -a RISCV64 -t GCC5 -b RELEASE -D X64EMU_ENABLE -p Platform/Sophgo/SG2042_EVB_Board/SG2042.dsc
-              cp -v $WORKSPACE/Build/SG2042_EVB/RELEASE_GCC5/FV/SG2042.fd $GITHUB_WORKSPACE/
+              build -a RISCV64 -t GCC5 -b DEBUG -p Platform/Sophgo/SG2044Pkg/${PLAT}/${PLAT}.dsc
+              cp -v $WORKSPACE/Build/${PLAT}/DEBUG_GCC5/FV/${PLAT^^}.fd $GITHUB_WORKSPACE/artifact/${PLAT}.fd
 
       - name: 'Upload Build Artifact'
         uses: actions/upload-artifact@v4
         with:
-          name: sophgo-edk2
-          path: SG2042.fd
+          name: sophgo-edk2-${{ matrix.M_PLAT_NAME }}
+          path: artifact/
           retention-days: 30
