@@ -54,8 +54,8 @@ jobs:
               export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
               source edk2/edksetup.sh
               make -C edk2/BaseTools
-              build -a RISCV64 -t GCC5 -b DEBUG -D ACPI_ENABLE -p Platform/Sophgo/SG2042Pkg/${PLAT}/${PLAT}.dsc
-              cp -v $WORKSPACE/Build/${PLAT}/DEBUG_GCC5/FV/${PLAT^^}.fd $GITHUB_WORKSPACE/artifact/${PLAT}.fd
+              build -a RISCV64 -t GCC5 -b RELEASE -D ACPI_ENABLE -p Platform/Sophgo/SG2042Pkg/${PLAT}/${PLAT}.dsc
+              cp -v $WORKSPACE/Build/${PLAT}/RELEASE_GCC5/FV/${PLAT^^}.fd $GITHUB_WORKSPACE/artifact/${PLAT}.fd
 
       - name: 'Upload Build Artifact'
         uses: actions/upload-artifact@v4
