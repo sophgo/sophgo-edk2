@@ -1,3 +1,69 @@
+# 1.4.0_2026-04-07
+
+## zsbl
+
+branch: master \
+tag: sg2042-rel-v3.0.3 \
+commit: 028228101501cdf870ffaaf1c59659fdb0d24046
+
++ SG2042: v3.0.3 release
++ SG2042: Add socket ID in dts
++ Use imac instead of imafdc
++ Fixbug: ROM boot failed
++ Fixbug, scheduler may waste a cpu time slice when scheduling
++ SG2042: Change CONFIG_SMP_NUM to a platform defined one
+
+## opensbi
+
+branch: sg2042-1.2-v20260407 \
+tag: SG2042_OpenSBI-1.2.0_v20260407 \
+commit: 7b9d863de59a1ec4923396ff8e814c87b987287e
+
++ lib: sbi: Simplify wait_for_coldboot() implementation
++ Fixbug, compile error without debug option
+
+## edk2
+
+branch: devel-sg2042 \
+tag: sg2042_edk2_20260407 \
+commit: e1d3e494c275068932730e3e6bf44139d3675dae
+
++ Revert "SG2042: Workaround for Sv39 on SG2042"
+
+## edk2-platforms
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-platforms_20260407 \
+commit: 94a152037b1552aa6765efd67db660d8969b1839
+
++ Sophgo/SG2042: Optimize the processing logic of boot options
++ SG2042: Remove Sv39 workaround of PCIe
++ SG2042: Pci segment lib support 2 sockets
++ SG2042: Align PCIe information between BIOS and OS
++ Fixbug, MMC/SD and CPU dosn't have IO coherent
++ Fixbug, ethernet doesn't have IO coherent with CPU
++ Fixbug, PCI segments in 2nd socket should start from 4
++ Fixbug when enumerate PCIe in 2nd socket
++ Fixbug, count of bus number should be 255 not 254
++ Add PCIe segments in 2nd socket for SRA1
++ SG2042: Revert PCIe IO coherent workaround
++ SG2042/VirtualRealTimeClockLib: Remove unused code
++ SG2042: Remove unused library VirtualRealTimeClockLib.inf on EVB and Box
++ SG2042: Set \_CCA of PCIe controller to 1
+
+## edk2-non-osi
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-non-osi_20260407 \
+commit: 06f949f155de8fc65ba1a776ed3ccf7414723007 \
+
++ SG2042: Add opensbi binary
++ SG2042: Update zsbl. Add socket ID in dts
++ SG2042: Disable PCIe write reorder on single chip
++ SG2042/Boot: Update fip.bin: New feature, RISC-V CPUs and PCIe have IO coherent now.
++ SG2042/Boot: Add prebuild zsbl binaries
++ SG2042: Add fip.bin binary
+
 # 1.3.0_2025-12-10
 
 ## [zsbl(master)](https://github.com/sophgo/zsbl/tree/master)
