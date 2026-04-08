@@ -1,3 +1,45 @@
+# 1.4.1_2026-04-08
+
+## zsbl
+
+branch: master \
+tag: sg2042-rel-v3.0.3 \
+commit: 028228101501cdf870ffaaf1c59659fdb0d24046
+
++ No update
+
+## opensbi
+
+branch: sg2042-1.2-v20260407 \
+tag: SG2042_OpenSBI-1.2.0_v20260407 \
+commit: 7b9d863de59a1ec4923396ff8e814c87b987287e
+
++ No update
+
+## edk2
+
+branch: devel-sg2042 \
+tag: sg2042_edk2_20260407 \
+commit: e1d3e494c275068932730e3e6bf44139d3675dae
+
++ No update
+
+## edk2-platforms
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-platforms_20260408 \
+commit: ca3400cff4e0273846e14a83a696b52985148d13
+
++ SG2042: Fix bug, BIOS version shown in UiApp is wrong
+
+## edk2-non-osi
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-non-osi_20260407 \
+commit: 06f949f155de8fc65ba1a776ed3ccf7414723007 \
+
++ No update
+
 # 1.4.0_2026-04-07
 
 ## zsbl
