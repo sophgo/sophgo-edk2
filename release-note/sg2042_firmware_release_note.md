@@ -1,3 +1,33 @@
+# 1.4.3_2026-06-17
+
+## edk2
+
+branch: devel-sg2042 \
+tag: sg2042_edk2_20260407 \
+commit: e1d3e494c275068932730e3e6bf44139d3675dae
+
++ No update
+
+## edk2-platforms
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-platforms_20260617 \
+commit: 02e6b7618e4090cad54b2724f6a535990658a539
+
++ SG2042: Fixbug, Wrong PCIe controller is used in MCFG
++ SG2042: Delete ethernet in DSDT
+
+## edk2-non-osi
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-non-osi_20260617 \
+commit: 3c7fbde3a7e33710a8d62267452a5acfde3c315d \
+
++ opensbi: SG2042: fixbug, virtual timer may never expired
++ fip: SG2042: Set PCIe max payload supported to 128.
++ fip: SG2042: Slow down virtual timer update frequency
++ fip: SG2042: Reset PCIe QoS from highest to normal
+
 # 1.4.2_2026-04-24
 
 ## zsbl
