@@ -1,3 +1,122 @@
+# 2.0.0_2026-07-30
+
+## sophgo-2260
+branch: master \
+tag: NA \
+commit: 42134f2e676920351be293a33f32bfc4495f7e8d
+
++ SG2044: Move PCIe init from fsbl to EDK2
++ Remove BAR0 and BAR1 of PCIe RC
+
+## bootloader-riscv
+branch: master \
+tag: NA \
+commit: 7a35029e9c648292cf4e8b7d4c17ba01c56ad4a3
+
++ SG2042/SG2044: Overwrite prebuild binaries if source code available
++ scripts: Add SRM3-70 platform support for SG2044
++ scripts: Add SD3-10-LB and SRA3-40-LB platform support for SG2044
++ scripts: Add SD3-12 platform support for SG2044
++ Fix the bios version bug
++ SG2042/SG2044: Auto detect toolchain tag when building edk2
+
+## zsbl
+branch: master \
+tag: sg2044-rel-v3.0.6 \
+commit: 8c61c3ec7488354869014f97235e82454822bec0
+
++ SG2044: Add SD3-12 conf and dtso
++ SG2044: Add SRM3-70 conf
++ SG2044: Drop PCIe and MAC conf.ini handling from ZSBL
++ SG2044: Drop dead [pcieN] sections from the board conf.ini files
++ SG2044: Remove dead conf.ini sections [DDR], [CPU], [board], [product]
++ SG2044: v3.0.6 release
+
+## opensbi
+branch: sg2044-dev \
+tag: SG2044_OpenSBI-1.6.0_v20260316 \
+commit: 13b1e18dc7572ce1c85ee939260b13646874f16d
+
++ SG2044: fixbug, disable t-head pmu quirk
+
+## sophgo-edk2
+branch: devel-sg2044 \
+tag: sg2044_sophgo-edk2_20260730 \
+commit: 7f57b26ee6f5431b633fc921e2f641dec96bcd8c
+
++ Sophgo/SG2044: Fill Type 41 onboard-device SBDF dynamically
++ Sophgo/SG2044: Promote Type 9 slot attributes to BOARD_SLOT fields
++ Sophgo/SG2044: Fix wrong PCIe generation in SRA3-40-family slot tables
++ Sophgo/SG2044: Drop bogus onboard-device (Type 41) records
++ Sophgo/SG2044: SD3-12/SRM3-70 1-based slot naming, MCIO2 = slot 0
++ Sophgo/SG2044: Align SRA3-40-family slot numbers to switch PSNs
++ Sophgo/SG2044: SMBIOS Type 9 from slot tables, ACPI \_SUN per variant
++ Sophgo/SG2044: Add board PCIe slot tables, program config-space PSN
++ Sophgo/SG2044: Fix SMBIOS Type 41 onboard devices
++ SG2044/SD3-12,SRM3-70: fix incorrect SMBIOS data
++ SG2044: refactor RHCT ISA string and add missing extensions
++ SG2044: set FADT PM profile to Desktop and bump MADT to ACPI 6.6
++ Silicon/Sophgo: Remove orphaned PcdIniFileMaxSize, fix stale Hest.c comment
++ Silicon/Sophgo: Replace conf.ini MAC with random locally-administered MAC, drop IniParserLib
++ Silicon/Sophgo: Bring up SG2044 PCIe RC links in PEI
++ Silicon/Sophgo: Add PCIe PHY/link bring-up fields to the host bridge PCD
++ Silicon/Sophgo: Add DwGpioPei producing SOPHGO_GPIO_PPI
++ Silicon/Sophgo: Extract DwGpioLib from DwGpioDxe
++ Sophgo/SG2044: Correct the Sv48 comment in the platform DSCs
++ Sophgo/SG2044: Fix SD3-12 board and product version to 1.1
++ Sophgo/SG2044: Add SRM3-70 board variant
++ Sophgo/SG2044: Extract PCIe host bridge PCD into per-variant include files
++ Sophgo/SG2044: Assert PCIe windows fit the controller slave-map regions
++ Sophgo/SG2044: Remove dead FDT scaffolding from PCIe platform code
++ Sophgo/SG2044: Refactor PCIe host bridge PCD to array-of-struct
++ Sophgo/SG2044: Enlarge PCIe config window in \_CRS to match MCFG ECAM
++ SG2044: Drop the 64-bit non-prefetchable PCIe BAR window on all variants
++ Sophgo/SG2044: Recognize SRA3-40-LB in BMC inventory platform type
++ Sophgo/SG2044: Fix BMC physical slot mapping after PCIe segment rebase
++ Sophgo/SG2044: Add SD3-10-LB and SRA3-40-LB large-BAR platforms
++ Sophgo/SG2044: Align UEFI PCIe segment with OS domain numbering
++ SG2044/SD3-12: Switch IPMI transport from Serial to SSIF
++ SG2044: Adapt Ds1307RealTimeClockLib and MCUFirmwareUpdate to new I2C interface
++ SG2044: Refactor I2C master protocol to generic read/write operations
++ SG2044: add Smbios support for SD3-12
++ SG2044: split unified L1 cache size evenly for I/D display
++ SG2044: use ExtendedSpeed for SMBIOS Type17 memory device speed
++ SG2044: wait for platform SMBIOS before HII setup drivers
++ SG2044: add missing SmbiosPlatformReady protocol to SD3-10 INF
++ Sophgo: keep boot options for present but empty block devices
++ SG2044: defer BmcConfig OEM report until platform SMBIOS is ready
++ SG2044: read BMC FRU and populate SMBIOS serial numbers
++ SG2044: add SD3-12 platform and split ACPI tables per platform
++ SG2044: report host NVMe/NIC inventory to BMC
++ SG2044: disable PcdPciDegradeResourceForOptionRom on all platforms
++ SG2044: fix missing 0x prefix on Pcie64BitSpaceStartAddr hex literal
++ SMBIOS Type39: add power supply information for SRA3-40 and SRA3-40-8
++ SMBIOS Type03: fix chassis type and power cord count
++ SMBIOS: add SRA3-40 and SRA3-40-8 drivers
++ SMBIOS: rename SmbiosPlatformDxe to SD3-10
++ SMBIOS Type19: update memory address range to 2G-130G
++ SMBIOS Type16: correct error correction type to None
++ SMBIOS Type07: consolidate L1 cache and fix values
++ SMBIOS Type02: populate ChassisHandle, ProcessorHandle, and serial number
++ SMBIOS Type00: fix BIOS segment to zero and populate extended BIOS ROM size
++ SMBIOS Type01: export SKU and Family from PCDs
++ SG2044Pkg/SD3-10: correct PcdProductName to SD3-10
++ SMBIOS Type17: move DRAM speed to base fields from extended fields
++ SMBIOS Type41: update defaults value and add slot mapping
++ SMBIOS Type09: add slot mapping and update defaults
++ SMBIOS Type44: update PROCESSOR_SPECIFIC table to latest BRS layout
++ SMBIOS Type04: correct CPU voltage reporting and add efuse logic
++ SMBIOS Type03: populate chassis type and height from product SKU
++ SMBIOS: reorder data table for cross-type handle dependencies
++ SMBIOS: remove unsupported Type38 tables
++ SG2044: Add Debug menu with Enable Serial Port option
++ Sophgo/SG2044: Split system memory HOB to reserve firmware region
++ SG2044/iPXE: Add prebuilt Intel UNDI binaries(RV)
++ NorFlashInfoLib: Add xt25q512f support
++ NorFlashInfoLib: Add support for GD25B512ME flash
++ SG2044: Upgrade to latest edk2-platforms, base line is b5e92aa284c59a22e7e38f79125a20f774ab7027
++ SG2044: Upgrade to latest edk2, base line is b03a21a63e3bd001f52c527e5a57feddb53a690b
+
 # 1.4.4_2026-02-13
 
 ## sophgo-2260
