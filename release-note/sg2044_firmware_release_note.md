@@ -11,8 +11,11 @@ commit: 42134f2e676920351be293a33f32bfc4495f7e8d
 ## bootloader-riscv
 branch: master \
 tag: NA \
-commit: 7a35029e9c648292cf4e8b7d4c17ba01c56ad4a3
+commit: 5f50e262dccccc0ecc04d86a95f2a3cd22bad64d
 
++ SG2044: Fix github workflow
++ SG2042/SG2044: fixbug, comment as commands
++ SG2044: SDK v20260730 release
 + SG2042/SG2044: Overwrite prebuild binaries if source code available
 + scripts: Add SRM3-70 platform support for SG2044
 + scripts: Add SD3-10-LB and SRA3-40-LB platform support for SG2044
@@ -41,9 +44,11 @@ commit: 13b1e18dc7572ce1c85ee939260b13646874f16d
 
 ## sophgo-edk2
 branch: devel-sg2044 \
-tag: sg2044_sophgo-edk2_20260730 \
-commit: 7f57b26ee6f5431b633fc921e2f641dec96bcd8c
+tag: sg2044_sophgo-edk2_20260731 \
+commit: a0e32e44191faf8876b8fbfd4f4df39b2aab9f66
 
++ SG2044: Remove set but unused variables
++ SG2044: Fix bug, github workflow build failed
 + Sophgo/SG2044: Fill Type 41 onboard-device SBDF dynamically
 + Sophgo/SG2044: Promote Type 9 slot attributes to BOARD_SLOT fields
 + Sophgo/SG2044: Fix wrong PCIe generation in SRA3-40-family slot tables
