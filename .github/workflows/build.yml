@@ -9,14 +9,14 @@ on:
 
 jobs:
   build-edk2:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         M_PLAT_NAME: [SRA3-40, SRA3-40-8, SD3-10]
 
     env:
-      mainline_elf_toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2023.12.14
-      mainline_elf_toolchain_file_name: riscv64-elf-ubuntu-22.04-gcc-nightly-2023.12.14-nightly.tar.gz
+      mainline_elf_toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2026.07.15
+      mainline_elf_toolchain_file_name: riscv64-elf-ubuntu-24.04-gcc.tar.xz
       wget_alias: 'wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0'
       CHIP: sg2044
       PLAT: ${{ matrix.M_PLAT_NAME }}
@@ -51,11 +51,11 @@ jobs:
               export PATH="/opt/riscv/bin:$PATH"
               export WORKSPACE=`pwd`
               export PACKAGES_PATH=$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi:$WORKSPACE/external-modules
-              export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
+              export GCC_RISCV64_PREFIX=riscv64-unknown-elf-
               source edk2/edksetup.sh
               make -C edk2/BaseTools
-              build -a RISCV64 -t GCC5 -b RELEASE -p Platform/Sophgo/SG2044Pkg/${PLAT}/${PLAT}.dsc
-              cp -v $WORKSPACE/Build/${PLAT}/RELEASE_GCC5/FV/${PLAT^^}.fd $GITHUB_WORKSPACE/artifact/${PLAT}.fd
+              build -a RISCV64 -t GCC -b RELEASE -p Platform/Sophgo/SG2044Pkg/${PLAT}/${PLAT}.dsc
+              cp -v $WORKSPACE/Build/${PLAT}/RELEASE_GCC/FV/${PLAT^^}.fd $GITHUB_WORKSPACE/artifact/${PLAT}.fd
 
       - name: 'Upload Build Artifact'
         uses: actions/upload-artifact@v4
