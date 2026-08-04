@@ -1,4 +1,4 @@
-# 2.0.0_2026-07-30
+# 2.0.0_2026-08-04
 
 ## sophgo-2260
 branch: master \
@@ -44,9 +44,10 @@ commit: 13b1e18dc7572ce1c85ee939260b13646874f16d
 
 ## sophgo-edk2
 branch: devel-sg2044 \
-tag: sg2044_sophgo-edk2_20260731 \
-commit: a0e32e44191faf8876b8fbfd4f4df39b2aab9f66
+tag: sg2044_sophgo-edk2_20260804 \
+commit: 2aa03936728645c6cd2b15d017ecbf3870aaf0f0
 
++ Sophgo/SG2044: Fix Type 9 Data Bus Width (0x11) to use raw value, not enum
 + SG2044: Remove set but unused variables
 + SG2044: Fix bug, github workflow build failed
 + Sophgo/SG2044: Fill Type 41 onboard-device SBDF dynamically
