@@ -1,3 +1,100 @@
+# 2.1.0_2026-09-24
+
+## sophgo-2260
+branch: master \
+tag: NA \
+commit: 42134f2e676920351be293a33f32bfc4495f7e8d
+
++ No update
+
+## bootloader-riscv
+branch: master \
+tag: NA \
+commit: 1c2d87d5c17878effd178dbabdcb92cae6c3396d
+
++ Using RV_EDKII_SRC_DIR as edk2 top source directory
++ SG2044: SRM3-70 is renamed to SRM3-C0
+
+## zsbl
+branch: master \
+tag: sg2044-rel-v3.2.0 \
+commit: 8c61c3ec7488354869014f97235e82454822bec0
+
++ v3.2.0 release
++ Not create device instance if no driver for it
++ Change platform device name from node name to path
++ SG2044: v3.1.0 release
++ Change versio logic, remove platform version
++ test: add multi-thread stress test suite
++ semaphore: fix list_add_tail argument order and sem_post thundering herd
++ semaphore: fix sem_init() ignoring the initial value parameter
++ libc: fix strncpy() to zero-fill remaining bytes
++ Move console point from before load to after load
++ Add command speed, set console speed to a specified one
++ Add xmodem command
++ Automount: mount aliased block devices at /mnt/<alias>
++ Add flash sophgo-boot mounter (end-to-end /mnt/flash)
++ Add vfs_mkdir_p for nested mount-point creation
++ Add sgpart filesystem test
++ Add sgpart: sophgo partition table as a VFS filesystem
++ Add mtdblock pass-through test
++ Add mtdblock: expose MTD devices as block devices
++ Add CFI NOR flash MTD driver for QEMU virt
++ Add directory iterate (readdir) for full listing of on-demand filesystems
++ Add ls and cat VFS shell commands
++ Add filesystem auto-detect and block-device automount
++ Add fatfs: FAT filesystem as a VFS filesystem type
++ Add virtio-blk driver over virtio-mmio
++ Add on-demand lookup for non-prebuilt filesystems
++ Add sysfs presenting devices under /sys
++ Add unified device registry
++ Add simple standalone vfs implementation
++ Build: strip Linux-kernel cruft from the build system
++ Fixbug: builtin dtb not rebuilt after modifying dts
+
+## opensbi
+branch: sg2044-dev \
+tag: SG2044_OpenSBI-1.6.0_v20260316 \
+commit: 13b1e18dc7572ce1c85ee939260b13646874f16d
+
++ No update
+
+## sophgo-edk2
+branch: devel-sg2044 \
+tag: sg2044_sophgo-edk2_20260924 \
+commit: 5f9a104f3eca58c29c40ad61aca62c2cb104ac94
+
++ SG2044: 2.1.0 Release
++ SG2044: Remove unused PCD PcdFirmwareVersionString
++ Sophgo/SG2044: Fix F2 hotkey and boot ordering after firmware size changes
++ SG2044: Add new devices to OPROM white list
++ Sophgo/SG2044Pkg: make the x64 emulator runtime-configurable
++ Emulator: gate DriverEntry on PcdMauEmulationEnabled
++ SecurityPkg/DxeImageVerificationLib: Allow LoadImage with NULL device path
++ Sophgo/SG2044: Allow AMD Radeon RX 580 Option ROM
++ Sophgo/SG2044: Add PCI Option ROM allow-list policy
++ MdeModulePkg/Core: Prefer below-4GiB memory for unspecified allocations
++ Sophgo/SG2044: Order freshly enumerated boot options ahead of inherited ones
++ qemu: fix unused release_lock warning in memory_ldst.inc.c
++ Emulator: fix unused UcErr warning in CpuCompressLeakedContexts
++ Merge pull request #66 from kilaterlee/Submit1129
++ Sophgo/SG2044: Poll all PCIe links on one shared timeout
++ Sophgo/SG2044: Program PCIe AxiRoute once per C2C before bring-up
++ Sophgo/SG2044: Fix missing AxID-replacement bypass corrupting PCIe writes
++ Sophgo/SG2044: Cap the PCIe link wait at 1s
++ Sophgo/SG2044: Wait for all PCIe links in parallel
++ Sophgo/SG2044: Drive PERST# collectively in the PCIe entry point
++ Sophgo/SG2044: Assert PERST# during PCIe bring-up
++ Sophgo: Replace non-ASCII characters in code, comments and docs
++ Sophgo/SG2044: Source SMBIOS BIOS Version from PCD instead of flash
++ Sophgo/SG2044: Rename SRM3-70 platform to SRM3-C0
++ Sophgo/SG2044: Extract common DSC content into SG2044Common.dsc.inc
++ Sophgo/SG2044: Deduplicate ACPI .asl/.aslc files across variants
++ Sophgo/SG2044: Remove stale per-variant SMBIOS .c copies after dedup
++ Sophgo/SG2044: Deduplicate SMBIOS Type Data.c and DataTable.c
++ Sophgo/SG2044: Deduplicate SMBIOS Type Function.c across variants
++ SG2044: Rename PeilessSec to SecMain
+
 # 2.0.0_2026-08-04
 
 ## sophgo-2260
