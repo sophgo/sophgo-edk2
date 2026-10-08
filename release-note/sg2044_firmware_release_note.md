@@ -1,3 +1,48 @@
+# 2.1.1_2026-10-08
+
+## sophgo-2260
+branch: master \
+tag: NA \
+commit: 42134f2e676920351be293a33f32bfc4495f7e8d
+
++ No update
+
+## bootloader-riscv
+branch: master \
+tag: NA \
+commit: d491518be66d811ba3ea08f1fcf6bd289842c0c4
+
++ SG2044: Add release script
++ SG2044: Rename SRM3-C0 to SRM31
++ SG2044: Add openbmc firmware upgrade tarball
+
+## zsbl
+branch: master \
+tag: sg2044-rel-v3.2.0 \
+commit: 8c61c3ec7488354869014f97235e82454822bec0
+
++ No update
+
+## opensbi
+branch: sg2044-dev \
+tag: SG2044_OpenSBI-1.6.0_v20260316 \
+commit: 13b1e18dc7572ce1c85ee939260b13646874f16d
+
++ No update
+
+## sophgo-edk2
+branch: devel-sg2044 \
+tag: sg2044_sophgo-edk2_20260924 \
+commit: a04707d9801f50cd21984d0b19b0cab173840ef5
+
++ SG2044: 2.1.1 Release
++ SG2044: Add new devices to OPROM white list
++ SG2044: Report PcdBoardName in SMBIOS Type2 Product Name
++ SG2044: Fix PcdBoardName and PcdBoardVersion values
++ SG2044: Make the PCIe slot table library naming platform-independent
++ SG2044: Rename SRM3-C0 platform to SRM31
++ SG2044: BIOS v2.1.0 release
+
 # 2.1.0_2026-09-24
 
 ## sophgo-2260
