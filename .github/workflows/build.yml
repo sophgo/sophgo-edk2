@@ -50,7 +50,7 @@ jobs:
         run: |
               export PATH="/opt/riscv/bin:$PATH"
               export WORKSPACE=`pwd`
-              export PACKAGES_PATH=$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi
+              export PACKAGES_PATH=$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi:$WORKSPACE/external-modules
               export GCC5_RISCV64_PREFIX=riscv64-unknown-elf-
               source edk2/edksetup.sh
               make -C edk2/BaseTools
