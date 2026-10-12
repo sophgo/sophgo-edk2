@@ -1,3 +1,41 @@
+# 1.5.0_2026-10-12
+
+## edk2
+
+branch: devel-sg2042 \
+tag: sg2042_edk2_20260407 \
+commit: 42af26f57a8f109de3528e1a57d8f20d01562712
+
++ SecurityPkg/DxeImageVerificationLib: Allow LoadImage with NULL device path
++ MdeModulePkg/Core: Prefer below-4GiB memory for unspecified allocations
+
+## edk2-platforms
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-platforms_20261012 \
+commit: 1d5bcf6c796a33650ba24e043cf63cc7a788104b
+
++ Sophgo/SG2042Pkg: Always build the x64 emulator, gate at runtime
++ Sophgo/SG2042Pkg: Add DebugConfigDxe setup switches
++ Sophgo/SG2042Pkg: Gate SPCR on the DebugConfig serial switch
++ Sophgo/SG2042Pkg: Default the serial port switch to disabled
+
+## edk2-non-osi
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-non-osi_20261012 \
+commit: d1ab71b196d55d3b8773bb7192723f0c952e674b
+
++ SG2042: Update zsbl
+
+## external-modules/MultiArchUefiPkg
+
+branch: main \
+tag: 94e5362 \
+commit: 94e536283a6e23af188f7cd78f417682dde316fe
+
++ Emulator: gate DriverEntry on PcdMauEmulationEnabled
+
 # 1.4.3_2026-06-17
 
 ## edk2
@@ -228,7 +266,7 @@ commit: 06f949f155de8fc65ba1a776ed3ccf7414723007 \
 + Add sg2044-sra3.dtso and update all *conf.ini (@kun-chang in [65ca399b089b65d](https://github.com/sophgo/zsbl/commit/65ca399b089b65d) at 2025-04-17 13:08:48)
     > Signed-off-by: kun-chang &lt;kun.chang@sophgo.com&gt;
 
-+ Modify to read secure boot flag and public key hash from ‌eFuse0�? (@Jianhang Wu in [33a6e22653cbc89](https://github.com/sophgo/zsbl/commit/33a6e22653cbc89) at 2025-04-17 02:48:49)
++ Modify to read secure boot flag and public key hash from ‌eFuse0�? (@Jianhang Wu in [33a6e22653cbc89](https://github.com/sophgo/zsbl/commit/33a6e22653cbc89) at 2025-04-17 02:48:49)
     > Signed-off-by: Jianhang Wu &lt;jianhang.wu@sophgo.com&gt;
 
 + fixbug, ini parser doesn&#x27;t work well if \r\n as new line (@Chao Wei in [ab4cb7cb70649d7](https://github.com/sophgo/zsbl/commit/ab4cb7cb70649d7) at 2025-04-16 13:42:24)
@@ -282,8 +320,8 @@ commit: 06f949f155de8fc65ba1a776ed3ccf7414723007 \
     > Signed-off-by: Jianhang Wu &lt;jianhang.wu@sophgo.com&gt;
 
 + Add secure boot function in zsbl. (@Jianhang Wu in [4d639fee26b4995](https://github.com/sophgo/zsbl/commit/4d639fee26b4995) at 2025-03-18 08:09:29)
-    > The PKA driver has been added, supporting both ‌RSA (SHA256)�? and ‌SM2 (SM3)�? signature verification algorithms.
-    > If the secure boot option is enabled in the efuse configuration, the original boot files must be augmented with ‌additional signature files and public keys�?.
+    > The PKA driver has been added, supporting both ‌RSA (SHA256)�? and ‌SM2 (SM3)�? signature verification algorithms.
+    > If the secure boot option is enabled in the efuse configuration, the original boot files must be augmented with ‌additional signature files and public keys�?.
     > Signed-off-by: Jianhang Wu &lt;jianhang.wu@sophgo.comn&gt;
 
 + riscv: conf: modify processor name (@Jingyu Li in [af8a0c2936926a3](https://github.com/sophgo/zsbl/commit/af8a0c2936926a3) at 2025-03-15 08:08:53)
