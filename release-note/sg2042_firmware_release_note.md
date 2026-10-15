@@ -1,3 +1,37 @@
+# 1.5.1_2026-10-15
+
+## edk2
+
+branch: devel-sg2042 \
+tag: sg2042_edk2_20260407 \
+commit: 42af26f57a8f109de3528e1a57d8f20d01562712
+
++ No update
+
+## edk2-platforms
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-platforms_20261015 \
+commit: 5cab5f35f3ffb325f02680933c413fa33f88a1d6
+
++ SG2042: Fix bug, wrong PCIe dma range.
+
+## edk2-non-osi
+
+branch: devel-sg2042 \
+tag: sg2042_edk2-non-osi_20261012 \
+commit: d1ab71b196d55d3b8773bb7192723f0c952e674b
+
++ No update
+
+## external-modules/MultiArchUefiPkg
+
+branch: main \
+tag: 94e5362 \
+commit: 94e536283a6e23af188f7cd78f417682dde316fe
+
++ No update
+
 # 1.5.0_2026-10-12
 
 ## edk2
