@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        M_PLAT_NAME: [SRA3-40, SRA3-40-8, SD3-10]
+        M_PLAT_NAME: [SD3-10, SD3-10-LB, SD3-12, SRA3-40, SRA3-40-LB, SRA3-40-8, SRM31]
 
     env:
       mainline_elf_toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2026.07.15
