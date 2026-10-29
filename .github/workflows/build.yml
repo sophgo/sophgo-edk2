@@ -12,13 +12,35 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        M_PLAT_NAME: [SD3-10, SD3-10-LB, SD3-12, SRA3-40, SRA3-40-LB, SRA3-40-8, SRM31]
+        include:
+          # SG2044: full firmware.bin/img packaging flow
+          - M_CHIP: sg2044
+            M_PLAT_NAME: SD3-10
+          - M_CHIP: sg2044
+            M_PLAT_NAME: SD3-10-LB
+          - M_CHIP: sg2044
+            M_PLAT_NAME: SD3-12
+          - M_CHIP: sg2044
+            M_PLAT_NAME: SRA3-40
+          - M_CHIP: sg2044
+            M_PLAT_NAME: SRA3-40-LB
+          - M_CHIP: sg2044
+            M_PLAT_NAME: SRA3-40-8
+          - M_CHIP: sg2044
+            M_PLAT_NAME: SRM31
+          # SG2042: board FD only
+          - M_CHIP: sg2042
+            M_PLAT_NAME: SG2042-EVB
+          - M_CHIP: sg2042
+            M_PLAT_NAME: MilkV-Pioneer
+          - M_CHIP: sg2042
+            M_PLAT_NAME: SRA1-20
 
     env:
       mainline_elf_toolchain: https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2026.07.15
       mainline_elf_toolchain_file_name: riscv64-elf-ubuntu-24.04-gcc.tar.xz
       wget_alias: 'wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0'
-      CHIP: sg2044
+      CHIP: ${{ matrix.M_CHIP }}
       PLAT: ${{ matrix.M_PLAT_NAME }}
 
     steps:
@@ -51,13 +73,17 @@ jobs:
               export PATH="/opt/riscv/bin:$PATH"
               source tools/envsetup.sh
               build_rv_all
-              cp -v $RV_FIRMWARE_INSTALL_DIR/firmware.bin $GITHUB_WORKSPACE/artifact/firmware.bin
-              cp -v $RV_FIRMWARE_INSTALL_DIR/firmware.img $GITHUB_WORKSPACE/artifact/firmware.img
-              cp -v $RV_FIRMWARE_INSTALL_DIR/${PLAT^^}.fd $GITHUB_WORKSPACE/artifact/${PLAT}.fd
+              if [ "$CHIP" = "sg2042" ]; then
+                  cp -v $RV_FIRMWARE_INSTALL_DIR/${PLAT^^}.fd $GITHUB_WORKSPACE/artifact/${PLAT}.fd
+              else
+                  cp -v $RV_FIRMWARE_INSTALL_DIR/firmware.bin $GITHUB_WORKSPACE/artifact/firmware.bin
+                  cp -v $RV_FIRMWARE_INSTALL_DIR/firmware.img $GITHUB_WORKSPACE/artifact/firmware.img
+                  cp -v $RV_FIRMWARE_INSTALL_DIR/${PLAT^^}.fd $GITHUB_WORKSPACE/artifact/${PLAT}.fd
+              fi
 
       - name: 'Upload Build Artifact'
         uses: actions/upload-artifact@v4
         with:
-          name: sophgo-edk2-firmware-${{ matrix.M_PLAT_NAME }}
+          name: sophgo-edk2-firmware-${{ matrix.M_CHIP }}-${{ matrix.M_PLAT_NAME }}
           path: artifact/
           retention-days: 30

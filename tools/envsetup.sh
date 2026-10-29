@@ -1,17 +1,26 @@
 #!/bin/bash
-# Standalone SG2044 firmware build environment for sophgo-edk2.
-# zsbl/fw_dynamic/fsbl/dtbo come pre-built from edk2-non-osi, so no
-# opensbi/eboot source checkout is needed. Function names and layout
-# follow bootloader-riscv/scripts/envsetup.sh.
+# Unified SG2042/SG2044 firmware build environment for sophgo-edk2.
+# Prebuilt boot payloads come from edk2-non-osi. SG2044 additionally uses
+# the firmware.bin/img packaging flow; SG2042 produces its board FD only.
+#
+# Examples:
+#   CHIP=sg2044 PLAT=SD3-10 source tools/envsetup.sh
+#   CHIP=sg2042 PLAT=SG2042-EVB source tools/envsetup.sh
 
 RV_EDKII_SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RV_OUTPUT_DIR="$RV_EDKII_SRC_DIR/Build/${PLAT:-SD3-10}"
 RV_FIRMWARE_INSTALL_DIR="$RV_OUTPUT_DIR/firmware"
-RV_FIRMWARE="$RV_EDKII_SRC_DIR/edk2-non-osi/Silicon/Sophgo/SG2044/Boot"
 
 CHIP=${CHIP:-sg2044}
 PLAT=${PLAT:-SD3-10}
 SG2044_PLAT_LIST='SD3-10 SD3-10-LB SD3-12 SRA3-40 SRA3-40-LB SRA3-40-8 SRM31'
+SG2042_PLAT_LIST='SG2042-EVB MilkV-Pioneer SRA1-20'
+
+if [ "$CHIP" = "sg2042" ]; then
+	RV_FIRMWARE="$RV_EDKII_SRC_DIR/edk2-non-osi/Silicon/Sophgo/SG2042/Boot"
+else
+	RV_FIRMWARE="$RV_EDKII_SRC_DIR/edk2-non-osi/Silicon/Sophgo/SG2044/Boot"
+fi
 
 RISCV64_ELF_CROSS_COMPILE=${RISCV64_ELF_CROSS_COMPILE:-"riscv64-unknown-elf-"}
 
@@ -70,8 +79,11 @@ function build_rv_edk2()
 	make -C edk2/BaseTools -j$(nproc)
 
 	TARGET=RELEASE
-
-	build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -p Platform/Sophgo/${CHIP^^}Pkg/${PLAT}/${PLAT^^}.dsc
+	if [ "$CHIP" = "sg2042" ]; then
+		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -D ACPI_ENABLE -p Platform/Sophgo/${CHIP^^}Pkg/${PLAT}/${PLAT^^}.dsc
+	else
+		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -p Platform/Sophgo/${CHIP^^}Pkg/${PLAT}/${PLAT^^}.dsc
+	fi
 
 	popd
 }
@@ -108,6 +120,11 @@ function clean_rv_firmware()
 
 function build_rv_firmware_bin()
 {
+	if [ "$CHIP" = "sg2042" ]; then
+		echo "SG2042 produces ${PLAT^^}.fd only; use bootloader-riscv for full images."
+		return 0
+	fi
+
 	local RELEASED_NOTE_PATH="$RV_EDKII_SRC_DIR/release-note"
 	local PRIVKEY_PATH="$RV_EDKII_SRC_DIR/keys/sophgo-root-private-key.pem"
 	local PUBKEY_PATH="$RV_EDKII_SRC_DIR/keys/sophgo-root-public-key.pem"
@@ -172,6 +189,10 @@ function clean_rv_firmware_bin()
 
 function build_rv_firmware_image()
 {
+	if [ "$CHIP" = "sg2042" ]; then
+		return 0
+	fi
+
 	if [ ! -f $RV_FIRMWARE_INSTALL_DIR/firmware.bin ]; then
 		echo "Error: $RV_FIRMWARE_INSTALL_DIR/firmware.bin not found, run build_rv_firmware_bin first"
 		return 1
@@ -217,7 +238,13 @@ function clean_rv_firmware_image()
 
 function build_rv_all()
 {
-	build_rv_edk2
+	build_rv_edk2 || return $?
+	if [ "$CHIP" = "sg2042" ]; then
+		mkdir -p "$RV_FIRMWARE_INSTALL_DIR"
+		cp -v "$RV_EDKII_SRC_DIR/Build/${PLAT}/RELEASE_GCC/FV/${PLAT^^}.fd" "$RV_FIRMWARE_INSTALL_DIR/"
+		return 0
+	fi
+
 	build_rv_firmware_bin
 	build_rv_firmware_image
 }
