@@ -233,10 +233,27 @@ function clean_rv_firmware_bin()
 
 function build_rv_firmware_image()
 {
-	if [ ! -f $RV_FIRMWARE_INSTALL_DIR/firmware.bin ]; then
-		echo "Error: $RV_FIRMWARE_INSTALL_DIR/firmware.bin not found, run build_rv_firmware_bin first"
+	local FD_FILE="$RV_EDKII_SRC_DIR/Build/${PLAT}/RELEASE_GCC/FV/${PLAT^^}.fd"
+
+	if [ ! -f "$FD_FILE" ]; then
+		echo "Error: EDK2 firmware not found at $FD_FILE"
+		echo "Run build_rv_edk2 first"
 		return 1
 	fi
+
+	if [ "$CHIP" = "mango" ]; then
+		if [ ! -f "$RV_FIRMWARE_INSTALL_DIR/fip.bin" ]; then
+			echo "Error: fip.bin not found, run build_rv_firmware first"
+			return 1
+		fi
+	else
+		if [ ! -f "$RV_FIRMWARE_INSTALL_DIR/fsbl.bin" ]; then
+			echo "Error: fsbl.bin not found, run build_rv_firmware first"
+			return 1
+		fi
+	fi
+
+	cp -v "$FD_FILE" $RV_FIRMWARE_INSTALL_DIR
 
 	pushd $RV_FIRMWARE_INSTALL_DIR
 	rm -f firmware.img
