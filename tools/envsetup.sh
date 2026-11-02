@@ -42,6 +42,10 @@ fi
 
 RISCV64_ELF_CROSS_COMPILE=${RISCV64_ELF_CROSS_COMPILE:-"riscv64-unknown-elf-"}
 
+# Reproducible builds: pin SOURCE_DATE_EPOCH unless caller overrides it.
+# Without this, every build produces a different FD hash (random GUID generation).
+export SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH:-1793180000}
+
 source "$RV_EDKII_SRC_DIR/tools/sign.sh"
 
 function show_rv_env()
@@ -98,9 +102,9 @@ function build_rv_edk2()
 
 	TARGET=RELEASE
 	if [ "$CHIP" = "mango" ]; then
-		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -D ACPI_ENABLE -p Platform/Sophgo/SG2042Pkg/${PLAT}/${PLAT^^}.dsc
+		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -D ACPI_ENABLE -p Platform/Sophgo/SG2042Pkg/${PLAT}/${PLAT}.dsc
 	else
-		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -p Platform/Sophgo/SG2044Pkg/${PLAT}/${PLAT^^}.dsc
+		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -p Platform/Sophgo/SG2044Pkg/${PLAT}/${PLAT}.dsc
 	fi
 
 	popd
