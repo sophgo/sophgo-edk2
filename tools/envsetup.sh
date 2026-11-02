@@ -1,22 +1,40 @@
 #!/bin/bash
 # Unified SG2042/SG2044 firmware build environment for sophgo-edk2.
-# Prebuilt boot payloads come from edk2-non-osi. SG2044 additionally uses
-# the firmware.bin/img packaging flow; SG2042 produces its board FD only.
+# Prebuilt boot payloads come from edk2-non-osi.
 #
 # Examples:
 #   CHIP=sg2044 PLAT=SD3-10 source tools/envsetup.sh
-#   CHIP=sg2042 PLAT=SG2042-EVB source tools/envsetup.sh
+#   CHIP=mango PLAT=SG2042-EVB source tools/envsetup.sh
 
 RV_EDKII_SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RV_OUTPUT_DIR="$RV_EDKII_SRC_DIR/Build/${PLAT:-SD3-10}"
-RV_FIRMWARE_INSTALL_DIR="$RV_OUTPUT_DIR/firmware"
 
-CHIP=${CHIP:-sg2044}
-PLAT=${PLAT:-SD3-10}
 SG2044_PLAT_LIST='SD3-10 SD3-10-LB SD3-12 SRA3-40 SRA3-40-LB SRA3-40-8 SRM31'
 SG2042_PLAT_LIST='SG2042-EVB MilkV-Pioneer SRA1-20'
 
-if [ "$CHIP" = "sg2042" ]; then
+CHIP=${CHIP:-sg2044}
+PLAT=${PLAT:-SD3-10}
+
+# Validity checks
+if [ "$CHIP" != "sg2044" ] && [ "$CHIP" != "mango" ]; then
+	echo "Error: CHIP must be 'sg2044' or 'mango' (got: '$CHIP')"
+	return 1 2>/dev/null || exit 1
+fi
+if [ "$CHIP" = "sg2044" ]; then
+	if [[ ! " $SG2044_PLAT_LIST " =~ " $PLAT " ]]; then
+		echo "Error: PLAT must be one of: $SG2044_PLAT_LIST (got: '$PLAT')"
+		return 1 2>/dev/null || exit 1
+	fi
+elif [ "$CHIP" = "mango" ]; then
+	if [[ ! " $SG2042_PLAT_LIST " =~ " $PLAT " ]]; then
+		echo "Error: PLAT must be one of: $SG2042_PLAT_LIST (got: '$PLAT')"
+		return 1 2>/dev/null || exit 1
+	fi
+fi
+
+RV_OUTPUT_DIR="$RV_EDKII_SRC_DIR/Build/${PLAT}"
+RV_FIRMWARE_INSTALL_DIR="$RV_OUTPUT_DIR/firmware"
+
+if [ "$CHIP" = "mango" ]; then
 	RV_FIRMWARE="$RV_EDKII_SRC_DIR/edk2-non-osi/Silicon/Sophgo/SG2042/Boot"
 else
 	RV_FIRMWARE="$RV_EDKII_SRC_DIR/edk2-non-osi/Silicon/Sophgo/SG2044/Boot"
@@ -79,10 +97,10 @@ function build_rv_edk2()
 	make -C edk2/BaseTools -j$(nproc)
 
 	TARGET=RELEASE
-	if [ "$CHIP" = "sg2042" ]; then
-		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -D ACPI_ENABLE -p Platform/Sophgo/${CHIP^^}Pkg/${PLAT}/${PLAT^^}.dsc
+	if [ "$CHIP" = "mango" ]; then
+		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -D ACPI_ENABLE -p Platform/Sophgo/SG2042Pkg/${PLAT}/${PLAT^^}.dsc
 	else
-		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -p Platform/Sophgo/${CHIP^^}Pkg/${PLAT}/${PLAT^^}.dsc
+		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -p Platform/Sophgo/SG2044Pkg/${PLAT}/${PLAT^^}.dsc
 	fi
 
 	popd
@@ -100,13 +118,21 @@ function clean_rv_edk2()
 function build_rv_firmware()
 {
 	mkdir -p $RV_FIRMWARE_INSTALL_DIR
-	if [ ! -f $RV_FIRMWARE_INSTALL_DIR/fsbl.bin ]; then
-		cp -v $RV_FIRMWARE/fsbl.bin $RV_FIRMWARE_INSTALL_DIR/fsbl.bin
+	if [ "$CHIP" = "mango" ]; then
+		if [ ! -f $RV_FIRMWARE_INSTALL_DIR/fip.bin ]; then
+			cp -v $RV_FIRMWARE/fip.bin $RV_FIRMWARE_INSTALL_DIR
+		fi
+		cp -v $RV_FIRMWARE/mango-*.dtb $RV_FIRMWARE_INSTALL_DIR
+		cp -v $RV_FIRMWARE/mango-*.dtbo $RV_FIRMWARE_INSTALL_DIR
+	else
+		if [ ! -f $RV_FIRMWARE_INSTALL_DIR/fsbl.bin ]; then
+			cp -v $RV_FIRMWARE/fsbl.bin $RV_FIRMWARE_INSTALL_DIR
+		fi
+		cp -v $RV_FIRMWARE/sg2044-*.dtbo $RV_FIRMWARE_INSTALL_DIR
 	fi
 
 	cp -v $RV_FIRMWARE/zsbl.bin $RV_FIRMWARE_INSTALL_DIR
 	cp -v $RV_FIRMWARE/fw_dynamic.bin $RV_FIRMWARE_INSTALL_DIR
-	cp -v $RV_FIRMWARE/sg2044-*.dtbo $RV_FIRMWARE_INSTALL_DIR
 
 	build_pack
 	cp -v "$RV_EDKII_SRC_DIR/tools/pack/pack" $RV_FIRMWARE_INSTALL_DIR
@@ -120,15 +146,7 @@ function clean_rv_firmware()
 
 function build_rv_firmware_bin()
 {
-	if [ "$CHIP" = "sg2042" ]; then
-		echo "SG2042 produces ${PLAT^^}.fd only; use bootloader-riscv for full images."
-		return 0
-	fi
-
 	local RELEASED_NOTE_PATH="$RV_EDKII_SRC_DIR/release-note"
-	local PRIVKEY_PATH="$RV_EDKII_SRC_DIR/keys/sophgo-root-private-key.pem"
-	local PUBKEY_PATH="$RV_EDKII_SRC_DIR/keys/sophgo-root-public-key.pem"
-	local PUBKEY_DER_PATH="public_key.der"
 	local EFI_FV="$RV_EDKII_SRC_DIR/Build/${PLAT}/RELEASE_GCC/FV/${PLAT^^}.fd"
 
 	if [ ! -f "$EFI_FV" ]; then
@@ -144,34 +162,56 @@ function build_rv_firmware_bin()
 	pushd $RV_FIRMWARE_INSTALL_DIR
 	rm -f firmware*.bin
 
-	./pack -a -p SG2044.fd -t 0x80000 -f ${PLAT^^}.fd -l 0x80200000 -o 0x600000 firmware.bin
-	./pack -a -p fsbl.bin -t 0x80000 -f fsbl.bin -l 0x7010080000 firmware.bin
-	./pack -a -p zsbl.bin -t 0x80000 -f zsbl.bin -l 0x40000000 firmware.bin
-	./pack -a -p fw_dynamic.bin -t 0x80000 -f fw_dynamic.bin -l 0x80000000 firmware.bin
-	./pack -a -p sg2044-evb.dtbo -t 0x80000 -f sg2044-evb.dtbo -l 0x88000000 firmware.bin
-	./pack -a -p sg2044-sd3-12.dtbo -t 0x80000 -f sg2044-sd3-12.dtbo -l 0x88000000 firmware.bin
-	./pack -a -p sg2044-sra3.dtbo -t 0x80000 -f sg2044-sra3.dtbo -l 0x88000000 firmware.bin
-	export_key $PRIVKEY_PATH $PUBKEY_PATH
-	sign $PRIVKEY_PATH ${PLAT^^}.fd
-	sign $PRIVKEY_PATH fsbl.bin
-	sign $PRIVKEY_PATH zsbl.bin
-	sign $PRIVKEY_PATH fw_dynamic.bin
-	sign $PRIVKEY_PATH sg2044-evb.dtbo
-	sign $PRIVKEY_PATH sg2044-sd3-12.dtbo
-	sign $PRIVKEY_PATH sg2044-sra3.dtbo
-	./pack -a -p SG2044.fd.sig -t 0x80000 -f ${PLAT^^}.fd.sig firmware.bin
-	./pack -a -p fsbl.bin.sig -t 0x80000 -f fsbl.bin.sig firmware.bin
-	./pack -a -p zsbl.bin.sig -t 0x80000 -f zsbl.bin.sig firmware.bin
-	./pack -a -p fw_dynamic.bin.sig -t 0x80000 -f fw_dynamic.bin.sig firmware.bin
-	./pack -a -p sg2044-evb.dtbo.sig -t 0x80000 -f sg2044-evb.dtbo.sig firmware.bin
-	./pack -a -p sg2044-sd3-12.dtbo.sig -t 0x80000 -f sg2044-sd3-12.dtbo.sig firmware.bin
-	./pack -a -p sg2044-sra3.dtbo.sig -t 0x80000 -f sg2044-sra3.dtbo.sig firmware.bin
-	./pack -a -p public_key.der -t 0x80000 -f $PUBKEY_DER_PATH firmware.bin
+	if [ "$CHIP" = "mango" ]; then
+		local RELEASED_NOTE_MD="$RELEASED_NOTE_PATH/sg2042_firmware_release_note.md"
+		./pack -a -p fip.bin -t 0x600000 -f fip.bin -o 0x30000 firmware.bin
+		./pack -a -p ${PLAT}.fd -t 0x600000 -f ${PLAT^^}.fd -l 0x2000000 -o 0x2040000 firmware.bin
+		./pack -a -p zsbl.bin -t 0x600000 -f zsbl.bin -l 0x40000000 firmware.bin
+		./pack -a -p fw_dynamic.bin -t 0x600000 -f fw_dynamic.bin -l 0x0 firmware.bin
+		./pack -a -p mango-milkv-pioneer.dtb -t 0x600000 -f mango-milkv-pioneer.dtb -l 0x20000000 firmware.bin
+		./pack -a -p mango-milkv-pioneer.dtbo -t 0x600000 -f mango-milkv-pioneer.dtbo -l 0x20000000 firmware.bin
+		./pack -a -p mango-sophgo-pisces.dtb -t 0x600000 -f mango-sophgo-pisces.dtb -l 0x20000000 firmware.bin
+		./pack -a -p mango-sophgo-pisces.dtbo -t 0x600000 -f mango-sophgo-pisces.dtbo -l 0x20000000 firmware.bin
+		./pack -a -p mango-sophgo-x4evb.dtb -t 0x600000 -f mango-sophgo-x4evb.dtb -l 0x20000000 firmware.bin
+		./pack -a -p mango-sophgo-x4evb.dtbo -t 0x600000 -f mango-sophgo-x4evb.dtbo -l 0x20000000 firmware.bin
+		./pack -a -p mango-sophgo-x8evb.dtb -t 0x600000 -f mango-sophgo-x8evb.dtb -l 0x20000000 firmware.bin
+		./pack -a -p mango-sophgo-x8evb.dtbo -t 0x600000 -f mango-sophgo-x8evb.dtbo -l 0x20000000 firmware.bin
+		./pack -a -p mango-sophgo-capricorn.dtb -t 0x600000 -f mango-sophgo-capricorn.dtb -l 0x20000000 firmware.bin
+		./pack -a -p mango-yixin-s2110.dtb -t 0x600000 -f mango-yixin-s2110.dtb -l 0x20000000 firmware.bin
+	else
+		local PRIVKEY_PATH="$RV_EDKII_SRC_DIR/keys/sophgo-root-private-key.pem"
+		local PUBKEY_PATH="$RV_EDKII_SRC_DIR/keys/sophgo-root-public-key.pem"
+		local PUBKEY_DER_PATH="public_key.der"
+		local RELEASED_NOTE_MD="$RELEASED_NOTE_PATH/sg2044_firmware_release_note.md"
+		./pack -a -p SG2044.fd -t 0x80000 -f ${PLAT^^}.fd -l 0x80200000 -o 0x600000 firmware.bin
+		./pack -a -p fsbl.bin -t 0x80000 -f fsbl.bin -l 0x7010080000 firmware.bin
+		./pack -a -p zsbl.bin -t 0x80000 -f zsbl.bin -l 0x40000000 firmware.bin
+		./pack -a -p fw_dynamic.bin -t 0x80000 -f fw_dynamic.bin -l 0x80000000 firmware.bin
+		./pack -a -p sg2044-evb.dtbo -t 0x80000 -f sg2044-evb.dtbo -l 0x88000000 firmware.bin
+		./pack -a -p sg2044-sd3-12.dtbo -t 0x80000 -f sg2044-sd3-12.dtbo -l 0x88000000 firmware.bin
+		./pack -a -p sg2044-sra3.dtbo -t 0x80000 -f sg2044-sra3.dtbo -l 0x88000000 firmware.bin
+		export_key $PRIVKEY_PATH $PUBKEY_PATH
+		sign $PRIVKEY_PATH ${PLAT^^}.fd
+		sign $PRIVKEY_PATH fsbl.bin
+		sign $PRIVKEY_PATH zsbl.bin
+		sign $PRIVKEY_PATH fw_dynamic.bin
+		sign $PRIVKEY_PATH sg2044-evb.dtbo
+		sign $PRIVKEY_PATH sg2044-sd3-12.dtbo
+		sign $PRIVKEY_PATH sg2044-sra3.dtbo
+		./pack -a -p SG2044.fd.sig -t 0x80000 -f ${PLAT^^}.fd.sig firmware.bin
+		./pack -a -p fsbl.bin.sig -t 0x80000 -f fsbl.bin.sig firmware.bin
+		./pack -a -p zsbl.bin.sig -t 0x80000 -f zsbl.bin.sig firmware.bin
+		./pack -a -p fw_dynamic.bin.sig -t 0x80000 -f fw_dynamic.bin.sig firmware.bin
+		./pack -a -p sg2044-evb.dtbo.sig -t 0x80000 -f sg2044-evb.dtbo.sig firmware.bin
+		./pack -a -p sg2044-sd3-12.dtbo.sig -t 0x80000 -f sg2044-sd3-12.dtbo.sig firmware.bin
+		./pack -a -p sg2044-sra3.dtbo.sig -t 0x80000 -f sg2044-sra3.dtbo.sig firmware.bin
+		./pack -a -p public_key.der -t 0x80000 -f $PUBKEY_DER_PATH firmware.bin
+	fi
 
-	if [ ! -e "$RELEASED_NOTE_PATH/sg2044_firmware_release_note.md" ] || [ ! -s "$RELEASED_NOTE_PATH/sg2044_firmware_release_note.md" ];then
+	if [ ! -e "$RELEASED_NOTE_MD" ] || [ ! -s "$RELEASED_NOTE_MD" ];then
 		local version="1.0.0"
 	else
-		local FIRST_MATCH=$(grep -oE '[0-9]+\.[0-9]+\.[0-9]+_[0-9]{4}-[0-9]{2}-[0-9]{2}' "$RELEASED_NOTE_PATH/sg2044_firmware_release_note.md" | head -n 1)
+		local FIRST_MATCH=$(grep -oE '[0-9]+\.[0-9]+\.[0-9]+_[0-9]{4}-[0-9]{2}-[0-9]{2}' "$RELEASED_NOTE_MD" | head -n 1)
 		local version="$(echo "$FIRST_MATCH" | cut -d'_' -f1)"
 	fi
 	echo -n ${version} | ./pack -a -o 0x0 firmware.bin
@@ -189,10 +229,6 @@ function clean_rv_firmware_bin()
 
 function build_rv_firmware_image()
 {
-	if [ "$CHIP" = "sg2042" ]; then
-		return 0
-	fi
-
 	if [ ! -f $RV_FIRMWARE_INSTALL_DIR/firmware.bin ]; then
 		echo "Error: $RV_FIRMWARE_INSTALL_DIR/firmware.bin not found, run build_rv_firmware_bin first"
 		return 1
@@ -217,9 +253,16 @@ function build_rv_firmware_image()
 	sudo mkdir -p efi/riscv64
 
 	echo copy bootloader...
-	sudo cp $RV_FIRMWARE_INSTALL_DIR/fsbl.bin efi/riscv64
-	sudo cp $RV_FIRMWARE_INSTALL_DIR/zsbl.bin efi/riscv64
-	sudo cp $RV_FIRMWARE_INSTALL_DIR/${PLAT^^}.fd efi/riscv64/SG2044.fd
+	if [ "$CHIP" = "mango" ]; then
+		sudo cp $RV_FIRMWARE_INSTALL_DIR/fip.bin efi/
+		sudo cp $RV_FIRMWARE_INSTALL_DIR/zsbl.bin efi/
+		sudo cp $RV_FIRMWARE_INSTALL_DIR/${PLAT^^}.fd efi/riscv64/${PLAT}.fd
+		sudo cp $RV_FIRMWARE_INSTALL_DIR/*.dtb efi/riscv64
+	else
+		sudo cp $RV_FIRMWARE_INSTALL_DIR/fsbl.bin efi/riscv64
+		sudo cp $RV_FIRMWARE_INSTALL_DIR/zsbl.bin efi/riscv64
+		sudo cp $RV_FIRMWARE_INSTALL_DIR/${PLAT^^}.fd efi/riscv64/SG2044.fd
+	fi
 	sudo cp $RV_FIRMWARE_INSTALL_DIR/fw_dynamic.bin efi/riscv64
 	sudo cp $RV_FIRMWARE_INSTALL_DIR/*.dtbo efi/riscv64
 
@@ -239,12 +282,6 @@ function clean_rv_firmware_image()
 function build_rv_all()
 {
 	build_rv_edk2 || return $?
-	if [ "$CHIP" = "sg2042" ]; then
-		mkdir -p "$RV_FIRMWARE_INSTALL_DIR"
-		cp -v "$RV_EDKII_SRC_DIR/Build/${PLAT}/RELEASE_GCC/FV/${PLAT^^}.fd" "$RV_FIRMWARE_INSTALL_DIR/"
-		return 0
-	fi
-
 	build_rv_firmware_bin
 	build_rv_firmware_image
 }

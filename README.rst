@@ -5,7 +5,8 @@ This repository builds UEFI firmware for SOPHGO RISC-V platforms:
 
 - **SG2044**: SG2044 EVB, SRA3 server boards, SD3 boards (firmware.bin/img
   packaging flow via ``tools/pack``)
-- **SG2042**: SG2042 EVB, Milk-V Pioneer, SRA1 server boards (board FD only)
+- **SG2042**: SG2042 EVB, Milk-V Pioneer, SRA1 server boards (firmware.bin/img
+  packaging flow via ``tools/pack``)
 
 All platforms build from the shared ``devel-sophgo`` branch.
 
@@ -16,7 +17,7 @@ Install dependencies.
 ----------------------
     .. code:: sh
 
-        sudo apt-get install autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build uuid-dev gcc-riscv64-unknown-elf acpica-tools
+        sudo apt-get install autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build uuid-dev gcc-riscv64-unknown-elf acpica-tools parted kpartx dosfstools mtools openssl
 
 Clone repository (maybe you have done this).
 ---------------------------------------------
@@ -49,25 +50,20 @@ platform, source the script, then run ``build_rv_all``:
         CHIP=sg2044 PLAT=SD3-10 source tools/envsetup.sh
         build_rv_all
 
-        # SG2042 example (adds -D ACPI_ENABLE automatically)
-        CHIP=sg2042 PLAT=SG2042-EVB source tools/envsetup.sh
+        # SG2042 example (CHIP=mango; adds -D ACPI_ENABLE automatically)
+        CHIP=mango PLAT=SG2042-EVB source tools/envsetup.sh
         build_rv_all
 
-For SG2044, the final outputs are
-``Build/$PLAT/RELEASE_GCC/FV/${PLAT^^}.fd``, ``firmware.bin`` and
-``firmware.img`` under ``Build/$PLAT/firmware/``.
-
-For SG2042, only the board FD
-``Build/$PLAT/RELEASE_GCC/FV/${PLAT^^}.fd`` is produced (copied to
-``Build/$PLAT/firmware/``); full flash images are built by
-``bootloader-riscv``.
+The final outputs are ``Build/$PLAT/RELEASE_GCC/FV/${PLAT^^}.fd``,
+``firmware.bin`` and ``firmware.img`` under ``Build/$PLAT/firmware/``.
 
 Available platforms
 --------------------
 
-    - SG2044: ``SD3-10``, ``SD3-10-LB``, ``SD3-12``, ``SRA3-40``,
-      ``SRA3-40-LB``, ``SRA3-40-8``, ``SRM31`` (default ``PLAT=SD3-10``)
-    - SG2042: ``SG2042-EVB``, ``MilkV-Pioneer``, ``SRA1-20``
+    - SG2044 (CHIP=sg2044): ``SD3-10``, ``SD3-10-LB``, ``SD3-12``,
+      ``SRA3-40``, ``SRA3-40-LB``, ``SRA3-40-8``, ``SRM31``
+      (default ``PLAT=SD3-10``)
+    - SG2042 (CHIP=mango): ``SG2042-EVB``, ``MilkV-Pioneer``, ``SRA1-20``
 
 More building options:
 ------------------------
@@ -140,24 +136,17 @@ More building options:
 Deploy
 ======
 
-SG2044
-------
-
 1. Mount your SD card (assume your SD card is ``/dev/sdc`` on your PC).
 
     .. code:: sh
 
         sudo mount /dev/sdc1 /mnt
 
-2. Copy ``SG2044.fd`` to your SD card in the ``0:riscv64/`` directory.
+2. Copy the firmware FD to your SD card in the ``0:riscv64/`` directory.
 
     .. code:: sh
 
+        # SG2044
         sudo cp SG2044.fd /mnt/riscv64/
-
-SG2042
-------
-
-Copy the board FD (e.g. ``SG2042-EVB.fd``) to the boot media
-(``0:riscv64/`` directory of the SD card, or the corresponding NOR flash
-offset) following the SG2042 deployment flow in ``bootloader-riscv``.
+        # SG2042
+        sudo cp SG2042-EVB.fd /mnt/riscv64/
