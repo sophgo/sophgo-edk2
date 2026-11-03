@@ -220,7 +220,16 @@ function build_rv_firmware_bin()
 	fi
 	echo -n ${version} | ./pack -a -o 0x0 firmware.bin
 
-	rm -f pack *.sig $PUBKEY_DER_PATH
+	# generate open-bmc tar ball
+	if [ "$CHIP" = "mango" ]; then
+		local machine=ast2600-sophgo
+	else
+		local machine=${PLAT^^}
+	fi
+	cp firmware.bin image-bmc
+	"$RV_EDKII_SRC_DIR/tools/gen-tar-for-bmc.sh" image-bmc -o obmc-bios.tar.gz -m $machine -v $version -s
+
+	rm -f image-bmc pack *.md sign *.sig $PUBKEY_DER_PATH
 
 	popd
 }
