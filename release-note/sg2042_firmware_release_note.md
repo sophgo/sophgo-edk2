@@ -1,3 +1,10 @@
+# 3.0.0_2026-11-03
+
+## Unified devel-sophgo branch
+
++ SG2042 and SG2044 share the devel-sophgo branch and a common BIOS version PCD
++ Unified build entry (tools/envsetup.sh) covers all 10 platforms
+
 # 1.5.1_2026-10-15
 
 ## edk2
