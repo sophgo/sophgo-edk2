@@ -250,17 +250,7 @@ function build_rv_firmware_image()
 		return 1
 	fi
 
-	if [ "$CHIP" = "mango" ]; then
-		if [ ! -f "$RV_FIRMWARE_INSTALL_DIR/fip.bin" ]; then
-			echo "Error: fip.bin not found, run build_rv_firmware first"
-			return 1
-		fi
-	else
-		if [ ! -f "$RV_FIRMWARE_INSTALL_DIR/fsbl.bin" ]; then
-			echo "Error: fsbl.bin not found, run build_rv_firmware first"
-			return 1
-		fi
-	fi
+	build_rv_firmware
 
 	cp -v "$FD_FILE" $RV_FIRMWARE_INSTALL_DIR
 
