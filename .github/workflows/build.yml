@@ -2,7 +2,9 @@ name: sophgo-edk2-build
 
 on:
   push:
+    branches: [ devel-sophgo ]
   pull_request:
+    branches: [ devel-sophgo ]
   workflow_dispatch:
   schedule:
     - cron: "0 2 * * *"
@@ -62,6 +64,7 @@ jobs:
         with:
           repository: sophgo/sophgo-edk2
           path: sophgo-edk2
+          ref: devel-sophgo
           submodules: recursive
 
       - name: prepare
