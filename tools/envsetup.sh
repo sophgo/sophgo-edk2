@@ -13,6 +13,7 @@ SG2042_PLAT_LIST='SG2042-EVB MilkV-Pioneer SRA1-20'
 
 CHIP=${CHIP:-sg2044}
 PLAT=${PLAT:-SD3-10}
+TARGET=${TARGET:-RELEASE}
 
 # Validity checks
 if [ "$CHIP" != "sg2044" ] && [ "$CHIP" != "mango" ]; then
@@ -100,14 +101,8 @@ function build_rv_edk2()
 
 	make -C edk2/BaseTools -j$(nproc)
 
-	#
-	# Build target is selectable: TARGET=RELEASE source tools/envsetup.sh
-	# DEBUG is the default so that the packaged firmware keeps the DEBUG
-	# serial output the emulator comes with.
-	#
-	TARGET=${TARGET:-DEBUG}
 	if [ "$CHIP" = "mango" ]; then
-		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -D ACPI_ENABLE -p Platform/Sophgo/SG2042Pkg/${PLAT}/${PLAT}.dsc
+		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -p Platform/Sophgo/SG2042Pkg/${PLAT}/${PLAT}.dsc
 	else
 		build -a RISCV64 -t $EDK2_TOOLCHAIN -b $TARGET -p Platform/Sophgo/SG2044Pkg/${PLAT}/${PLAT}.dsc
 	fi
@@ -156,7 +151,7 @@ function clean_rv_firmware()
 function build_rv_firmware_bin()
 {
 	local RELEASED_NOTE_PATH="$RV_EDKII_SRC_DIR/release-note"
-	local EFI_FV="$RV_EDKII_SRC_DIR/Build/${PLAT}/${TARGET:-DEBUG}_GCC/FV/${PLAT^^}.fd"
+	local EFI_FV="$RV_EDKII_SRC_DIR/Build/${PLAT}/${TARGET}_GCC/FV/${PLAT^^}.fd"
 
 	if [ ! -f "$EFI_FV" ]; then
 		echo "Error: EDK2 firmware not found at $EFI_FV"
@@ -247,7 +242,7 @@ function clean_rv_firmware_bin()
 
 function build_rv_firmware_image()
 {
-	local FD_FILE="$RV_EDKII_SRC_DIR/Build/${PLAT}/${TARGET:-DEBUG}_GCC/FV/${PLAT^^}.fd"
+	local FD_FILE="$RV_EDKII_SRC_DIR/Build/${PLAT}/${TARGET}_GCC/FV/${PLAT^^}.fd"
 
 	if [ ! -f "$FD_FILE" ]; then
 		echo "Error: EDK2 firmware not found at $FD_FILE"
